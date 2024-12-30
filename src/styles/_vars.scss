@@ -1,0 +1,57 @@
+//BLOCKS WIDTH
+$elem_width: 100px;
+$elem_width_980: calc(100% / 7);
+$sidebar_block_width: 260px;
+$sidebar_block_width_980: 240px;
+$sidebar_block_width_690: 260px;
+
+//FONTS
+$sidebar_very_big_font: 18px;
+$sidebar_big_font: 16px;
+$sidebar_medium_font: 14px;
+$sidebar_small_font: 12px;
+
+//COLORS
+$main_color: black;
+$secondary_color: rgb(112, 117, 122);
+$weather_theme: rgb(159, 170, 253);
+$search_theme: rgb(228, 230, 255);
+$main_theme: rgb(77, 98, 255);
+$main_theme_darker: rgb(49, 73, 255);
+$main_theme_deep: rgb(58, 74, 194);
+$main_theme_deepest: darkblue;
+$sidebar_info: aliceblue;
+
+@mixin btn {
+  height: 30px;
+  font-size: $sidebar_big_font;
+  text-decoration: none;
+  color: white;
+  background-color: $main_theme;
+  border: none;
+  border-radius: 5px;    
+  user-select: none;
+  &:hover {
+    background-color: $main_theme_darker;
+    cursor: pointer;
+  }
+  &.active {
+    background-color: $main_theme_deep;
+  }
+}
+
+@mixin loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin sidebar-info-block {
+  width: $sidebar_block_width;
+  background-color: $search_theme;
+  padding: 10px;
+  border-radius: 5px;
+  @media screen and (max-width: 980px) {
+    padding: 10px 5px;
+  }
+}

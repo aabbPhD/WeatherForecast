@@ -1,25 +1,251 @@
-import logo from './logo.svg';
-import './App.css';
+import './styles/reset.css';
+import './styles/global.scss';
+import './styles/app.scss';
+import { actionImages, weatherImages } from './components/allImages';
+
+import React from 'react';
+import MainContent from './components/MainContent';
+import Sidebar from './components/Sidebar';
+import { shallowCopy, delay } from './components/utils';
+import useWindowWidth from './components/useWindowWidth';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const windowWidth = useWindowWidth();//хук для определения ширины экрана
+    const mainContentRef = React.useRef(null);//нужен реф на график, чтобы прокручивать на узких экранах
+
+    //параметры для запроса
+    const [inputLatitude, setInputLatitude] = React.useState(null);//широта в input
+    const [curLatitude, setCurLatitude] = React.useState(null);//широта в текущих отображенных данных
+    const [inputLongitude, setInputLongitude] = React.useState(null);//долгота в input
+    const [curLongitude, setCurLongitude] = React.useState(null);//долгота в текущих отображенных данных
+    const [invalidInput, setInvalidInput] = React.useState(false);//при невалидных данных для инпутов другой стиль
+    const [tempUnits, setTempUnits] = React.useState('C');//градусы Цельсия / Фаренгейта
+    const [timezone, setTimezone] = React.useState('Europe/Moscow');//временная зона
+
+    //загрузка данных
+    const [loading, setLoading] = React.useState(false);//происходит загрузка данных о погоде
+    const [geolocationLoading, setGeolocationLoading] = React.useState(false);//происходит загрузка координат моей геолокации
+    const [searchTriggered, setSearchTriggered] = React.useState(false);//триггер кнопки поиска, выводит на экран новые данные, если они уже загружены. если нет - блокирует действия до конца загрузки
+    const [currentData, setCurrentData] = React.useState({'C': null, 'F': null});//данные на экране
+    const [fetchedData, setFetchedData] = React.useState({'C': null, 'F': null});//данные, грузящиеся асинхронно [для введенных координат координат]
+        
+    //ошибки сервера
+    const [fetchError, setFecthError] = React.useState(null);
+    const [geolocationError, setGeolocationError] = React.useState(null);
+
+    //АМ [key - название города на русском языке, data - вся информация о нем]
+    const [worldCitiesMap, setWorldCitiesMap] = React.useState(null);
+
+
+    //предварительная загрузка изображений
+    React.useEffect(() => {
+        [...Object.values(actionImages), ...Object.values(weatherImages)].forEach((src) => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
+
+    //предварительная загрузка JSON-файла с названиями городов
+    React.useEffect(() => {
+        async function loadWorldCitiesJSON() {
+            const response = await fetch('./data/worldcities.json');
+            const data = await response.json();
+            data.sort((a, b) => a.city_trans.localeCompare(b.city_trans));
+            setWorldCitiesMap(data);
+        }
+
+        loadWorldCitiesJSON()
+    }, []) 
+
+    //асинхронная загрузка данных при изменении координат (и если они не совпадают с текущими) 
+    React.useEffect(() => {
+        setInvalidInput(false);//при любом изменении значений - стили некорректного ввода сбрасываются
+        if (checkDataValidity()) fetchWeatherData(inputLatitude, inputLongitude, tempUnits);       
+    }, [inputLatitude, inputLongitude]);   
+
+    //рендеринг данных при триггере поиска и по окончанию загрузки
+    React.useEffect(() => {
+        if (searchTriggered && !loading && checkFetchedDataExistance()) {
+            updateData();            
+            setSearchTriggered(false);
+        }
+    }, [searchTriggered, loading, fetchedData]);
+
+    //запрос к серверу для получения данных о погоде
+    async function fetchWeatherData(latitude, longitude) {
+        if (checkDataValidity()) {
+            setLoading(true);
+            try {
+                const tempRequest_C = '';
+                const tempRequest_F = '&temperature_unit=fahrenheit';
+                const getRequest = (tempRequest) => {
+                    return `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}${tempRequest}&hourly=relative_humidity_2m,precipitation_probability,temperature_2m,wind_speed_10m,weather_code&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=${timezone}`;
+                    //return `https://invalid-hostname.com`;//не удалось подключиться к серверу
+                    //return 'https://api.open-meteo.com/v1/nonexistent-endpoint';//ошибка 404
+                }
+                const [response_C, response_F] = await Promise.all([
+                    fetch(getRequest(tempRequest_C)),
+                    fetch(getRequest(tempRequest_F)),
+                ]);               
+                if (!response_C.ok) throw new Error(`Ошибка HTTP: ${response_C.status}`);
+                if (!response_F.ok) throw new Error(`Ошибка HTTP: ${response_F.status}`);
+                const newData_C = await response_C.json();
+                const newData_F = await response_F.json();
+
+                //await delay(3000);//искуственная задержка ('плохой интернет')
+
+                //в идеале надо делать полную проверку на валидность данных?
+                if (!newData_C || !response_F) throw new Error(`Пришли невалидные данные`);
+                setFetchedData({'C': newData_C, 'F': newData_F});
+                setFecthError(null);
+            } catch (err) {
+                if (err.name === "TypeError" && err.message === "Failed to fetch") {
+                    setFecthError("Не удалось подключиться к серверу. Попробуйте позже.");
+                } else {
+                    setFecthError(err.message);
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+    
+    //когда данные загрузились, при нажатии поиска данные обновляются и выводятся на экран
+    function updateData() {
+        setCurrentData(shallowCopy(fetchedData));
+        setCurLatitude(inputLatitude);
+        setCurLongitude(inputLongitude);
+
+        //прокрутка экрана до графика - для малых значений width
+        const scrollViewToGraph = () => mainContentRef.current.scrollIntoView({ behavior: "smooth" });
+        if (windowWidth <= 690) scrollViewToGraph();
+    }
+
+    //проверка, что подгруженные данные существуют 
+    //(в идеале надо сравнивать и то, что они именно для тех координат, НО в ответе от сервера координаты отличаются на небольшую величину)
+    const checkFetchedDataExistance = () => (fetchedData['C'] && fetchedData['F']);
+
+    //если мы нажали поиск, а данные еще грузятся - выводим лоадер и блокируем некоторые кнопки
+    const isDataStillLoading = React.useCallback(() => (searchTriggered && loading), [searchTriggered]);
+
+    //проверка введенных координат на валидность
+    function checkDataValidity() {
+        if (inputLatitude === null || inputLongitude === null) return false;
+        if (inputLatitude === '' || inputLongitude === '') return false;
+        if (inputLatitude === '-' || inputLongitude === '-') return false;
+        if ((typeof inputLatitude === 'string' && inputLatitude.endsWith('.')) || 
+            (typeof inputLongitude === 'string' && inputLongitude.endsWith('.'))) return false;
+        return true;
+    }   
+
+    //по нажатию Поиска выводим данные по готовности
+    const triggerSearchButton = React.useCallback(() => {
+        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
+        if (!checkDataValidity()) {
+            setInvalidInput(true);
+            return;
+        }
+        //если значения координат совпадают с текущими, значит ничего подгружать не надо
+        if (curLatitude !== null && curLongitude !== null && 
+            parseFloat(inputLatitude) === parseFloat(curLatitude) && parseFloat(inputLongitude) === parseFloat(curLongitude)) return;
+        
+        setSearchTriggered(true);
+        if (!loading && checkFetchedDataExistance()) {
+            updateData();
+            setSearchTriggered(false);
+        }
+    }, [inputLatitude, curLatitude, inputLongitude, curLongitude, loading]);
+
+    //запрос к серверу для получения геолокации
+    function fetchLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error("Невозможно получить доступ к вашей геолокации."));
+                return;
+            }
+    
+            navigator.geolocation.getCurrentPosition(
+                (position) => resolve(position.coords),
+                (err) => {
+                    let errorMessage
+                    switch (err.code) {
+                        case err.PERMISSION_DENIED:
+                            errorMessage = "Пользователь запретил доступ к определению геолокации.";
+                            break;
+                        case err.POSITION_UNAVAILABLE:
+                            errorMessage = "Невозможно определить вашу локацию.";
+                            break;
+                        case err.TIMEOUT:
+                            errorMessage = "Превышено время ожидания ответа.";
+                            break;
+                        default:
+                            errorMessage = "Произошла неизвестная ошибка.";
+                    }
+                    reject(new Error(errorMessage))
+                }
+            );
+        });
+    }
+
+    //определение координат моей геолокации
+    const getMyLocation = React.useCallback(async () => {
+        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
+        setGeolocationError(null);
+        setGeolocationLoading(true);
+        try {
+            //await delay(3000);//искуственная задержка ('плохой интернет')
+            await delay(400);//для красоты (иначе при быстром ответе сервера будет странно мигать)
+            const coords = await fetchLocation();
+            const formattedLat = Number(coords.latitude.toFixed(3));
+            const formattedLong = Number(coords.longitude.toFixed(3));
+            setInputLatitude(formattedLat);
+            setInputLongitude(formattedLong);
+            setGeolocationError(null);
+        } catch (error) {
+            setGeolocationError(error.message);
+        } finally {
+            setGeolocationLoading(false);
+        }
+    }, [isDataStillLoading]);
+
+
+    return (
+        <div className="app">
+            <MainContent mainContentRef={mainContentRef}
+                         inputLatitude={inputLatitude}
+                         inputLongitude={inputLongitude}
+                         setInputLatitude={setInputLatitude}
+                         setInputLongitude={setInputLongitude}
+                         curLatitude={curLatitude}
+                         curLongitude={curLongitude}
+                         currentData={currentData}
+                         tempUnits={tempUnits}
+                         timezone={timezone}
+                         invalidInput={invalidInput}
+                         loading={loading}
+                         searchTriggered={searchTriggered}
+                         triggerSearchButton={triggerSearchButton} 
+                         isDataStillLoading={isDataStillLoading}
+                         fetchError={fetchError}
+                         getMyLocation={getMyLocation}
+                         geolocationLoading={geolocationLoading}
+                         geolocationError={geolocationError}
+                         windowWidth={windowWidth}/>
+                         
+            <Sidebar setInputLatitude={setInputLatitude}
+                     setInputLongitude={setInputLongitude}
+                     tempUnits={tempUnits}
+                     setTempUnits={setTempUnits}
+                     timezone={timezone}
+                     setTimezone={setTimezone}
+                     isDataStillLoading={isDataStillLoading}
+                     geolocationError={geolocationError}
+                     worldCitiesMap={worldCitiesMap}
+                     windowWidth={windowWidth}/>
+        </div>
+        
+    );
 }
 
 export default App;
