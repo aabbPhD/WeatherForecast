@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/WeatherForecast/static/css/main.77ee1405.css",
-    "main.js": "/WeatherForecast/static/js/main.f7bf210e.js",
+    "main.css": "/WeatherForecast/static/css/main.61649f76.css",
+    "main.js": "/WeatherForecast/static/js/main.7f82d5db.js",
     "static/media/Inter-Italic-VariableFont_opsz,wght.ttf": "/WeatherForecast/static/media/Inter-Italic-VariableFont_opsz,wght.831252f8ba7e1b5b2432.ttf",
     "static/media/Inter-VariableFont_opsz,wght.ttf": "/WeatherForecast/static/media/Inter-VariableFont_opsz,wght.e05c5f3d1fa6a3893d84.ttf",
     "static/media/heavy_snow.svg": "/WeatherForecast/static/media/heavy_snow.8054609b95efe856ae285bd31414f619.svg",
@@ -20,11 +20,11 @@
     "static/media/fog.svg": "/WeatherForecast/static/media/fog.07e4eed024c4704002e9a81c4ccdaabc.svg",
     "static/media/clear_night.svg": "/WeatherForecast/static/media/clear_night.20489f485a5e613a274f0d2f415aba28.svg",
     "index.html": "/WeatherForecast/index.html",
-    "main.77ee1405.css.map": "/WeatherForecast/static/css/main.77ee1405.css.map",
-    "main.f7bf210e.js.map": "/WeatherForecast/static/js/main.f7bf210e.js.map"
+    "main.61649f76.css.map": "/WeatherForecast/static/css/main.61649f76.css.map",
+    "main.7f82d5db.js.map": "/WeatherForecast/static/js/main.7f82d5db.js.map"
   },
   "entrypoints": [
-    "static/css/main.77ee1405.css",
-    "static/js/main.f7bf210e.js"
+    "static/css/main.61649f76.css",
+    "static/js/main.7f82d5db.js"
   ]
 }
