@@ -12,7 +12,6 @@ import useWindowWidth from './components/useWindowWidth';
 
 function App() {
     const windowWidth = useWindowWidth();//хук для определения ширины экрана
-    const mainContentRef = React.useRef(null);//нужен реф на график, чтобы прокручивать на узких экранах
 
     //параметры для запроса
     const [inputLatitude, setInputLatitude] = React.useState(null);//широта в input
@@ -37,6 +36,10 @@ function App() {
     //АМ [key - название города на русском языке, data - вся информация о нем]
     const [worldCitiesMap, setWorldCitiesMap] = React.useState(null);
 
+    //для скролла экрана до графика на широких экранах
+    const weatherRef = React.useRef(null);
+    const [isWeatherComponentVisible, setIsWeatherComponentVisible] = React.useState(false);//прокрутка будет совершена только после создания компонента, изначально он не создан
+
 
     //предварительная загрузка изображений
     React.useEffect(() => {
@@ -49,7 +52,7 @@ function App() {
     //предварительная загрузка JSON-файла с названиями городов
     React.useEffect(() => {
         async function loadWorldCitiesJSON() {
-            const response = await fetch('./data/worldcities.json');
+            const response = await fetch('/data/worldcities.json');
             const data = await response.json();
             data.sort((a, b) => a.city_trans.localeCompare(b.city_trans));
             setWorldCitiesMap(data);
@@ -57,6 +60,18 @@ function App() {
 
         loadWorldCitiesJSON()
     }, []) 
+
+    //для малых значений width: прокрутка экрана до графика после того как он отрендерится
+    React.useEffect(() => {
+        if (windowWidth <= 690) {
+            if (isWeatherComponentVisible && weatherRef.current) {
+                weatherRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+            }
+        } 
+    }, [isWeatherComponentVisible, windowWidth]);
 
     //асинхронная загрузка данных при изменении координат (и если они не совпадают с текущими) 
     React.useEffect(() => {
@@ -116,10 +131,6 @@ function App() {
         setCurrentData(shallowCopy(fetchedData));
         setCurLatitude(inputLatitude);
         setCurLongitude(inputLongitude);
-
-        //прокрутка экрана до графика - для малых значений width
-        const scrollViewToGraph = () => mainContentRef.current.scrollIntoView({ behavior: "smooth" });
-        if (windowWidth <= 690) scrollViewToGraph();
     }
 
     //проверка, что подгруженные данные существуют 
@@ -212,7 +223,8 @@ function App() {
 
     return (
         <div className="app">
-            <MainContent mainContentRef={mainContentRef}
+            <MainContent weatherRef={weatherRef}
+                         setIsWeatherComponentVisible={setIsWeatherComponentVisible}
                          inputLatitude={inputLatitude}
                          inputLongitude={inputLongitude}
                          setInputLatitude={setInputLatitude}

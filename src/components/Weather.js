@@ -8,7 +8,11 @@ import CurrentWeather from './CurrentWeather';
 import moment from "moment-timezone";
 
 
-const Weather = React.memo(({data, latitude, longtitude, selectedTimezone}) => {
+const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {
+    
+    //важно обозначит, что компонент был отрендерен, теперь до него можно делать прокрутку экрана
+    React.useEffect(() => setIsWeatherComponentVisible(true), []);
+    
     const { daily, hourly, current_weather, current_weather_units } = data;
 
     //для избежания путаницы в названиях
@@ -61,7 +65,7 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone}) => {
     const precipitationProbability = hourly.precipitation_probability[selectedHourlyIndex];
 
     return (
-        <div className='weather'>
+        <div className='weather' ref={weatherRef}>
             <CurrentWeather weatherIcon={weatherIcon} 
                             temp={temp} 
                             windspeed={windspeed} 
@@ -78,7 +82,8 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone}) => {
                                 firstTimestamp={HOURS_PER_DAY * selectedDay}
                                 selectedDataIndex={selectedDataIndex}
                                 setSelectedDataIndex={setSelectedDataIndex}
-                                offsetDifference={offsetDifference}/>
+                                offsetDifference={offsetDifference}
+                                windowWidth={windowWidth}/>
             <DailyForecast  daily={daily} 
                             selectedDay={selectedDay} 
                             setSelectedDay={setSelectedDay}/>

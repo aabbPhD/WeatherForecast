@@ -8,7 +8,7 @@ import Weather from './Weather';
 import { WeatherLoader } from './Loaders';
 
 
-const MainContent = React.memo(({mainContentRef, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, loading, searchTriggered, triggerSearchButton, isDataStillLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
+const MainContent = React.memo(({weatherRef, setIsWeatherComponentVisible, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, loading, searchTriggered, triggerSearchButton, isDataStillLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
 
     //стартовое сообщение в основном блоке
     const startMessage = (windowWidth >= width_changeButtonsToPictures) ? 
@@ -20,7 +20,7 @@ const MainContent = React.memo(({mainContentRef, inputLatitude, inputLongitude, 
         </>
     
     return (
-        <div className="main-content" ref={mainContentRef}>
+        <div className="main-content">
             <Search inputLatitude={inputLatitude}
                     inputLongitude={inputLongitude}
                     setInputLatitude={setInputLatitude}
@@ -40,7 +40,10 @@ const MainContent = React.memo(({mainContentRef, inputLatitude, inputLongitude, 
                 : (currentData['C'] && currentData['F'] && <Weather data={currentData[tempUnits]} 
                                                                     latitude={curLatitude}
                                                                     longtitude={curLongitude}
-                                                                    selectedTimezone={timezone}/>)}
+                                                                    selectedTimezone={timezone}
+                                                                    windowWidth={windowWidth}
+                                                                    weatherRef={weatherRef}
+                                                                    setIsWeatherComponentVisible={setIsWeatherComponentVisible}/>)}
             {fetchError && <p className='app-msg error'>{fetchError}</p>}
         </div>
     );

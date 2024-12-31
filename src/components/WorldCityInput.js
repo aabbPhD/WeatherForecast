@@ -24,6 +24,7 @@ export default function WorldCityInput({language, chooseLanguage, setSelectedCit
 
         //ищем вхождения sample в названия городов (сначала выводим префиксы, а потом просто вхождения)
         function filterStringsBySample(database, sample) {
+            if (!database || !sample) return []
             const startsWithSample = [];
             const containsSample = [];        
             for (const item of database) {

@@ -29,7 +29,7 @@ ChartJS.register(
 );
 
 
-export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIndex, setSelectedDataIndex, offsetDifference}) {
+export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIndex, setSelectedDataIndex, offsetDifference, windowWidth}) {
     const lastIndex = firstTimestamp + HOURS_PER_DAY - 1;
     let hours = [], values = [];
 
@@ -84,6 +84,7 @@ export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIn
         onHover: handleHover,
         animation: true,
         responsive: true,
+        maintainAspectRatio: windowWidth <= 500 ? false : true,
         plugins: {
             legend: {
                 position: 'top',
@@ -99,7 +100,7 @@ export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIn
                 },
             },
             tooltip: {
-                enabled: true,
+                enabled: false,
             },
         },
         scales: {
