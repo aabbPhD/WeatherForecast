@@ -52,7 +52,7 @@ function App() {
     //предварительная загрузка JSON-файла с названиями городов
     React.useEffect(() => {
         async function loadWorldCitiesJSON() {
-            const response = await fetch('/data/worldcities.json');
+            const response = await fetch('./data/worldcities.json');
             const data = await response.json();
             data.sort((a, b) => a.city_trans.localeCompare(b.city_trans));
             setWorldCitiesMap(data);
