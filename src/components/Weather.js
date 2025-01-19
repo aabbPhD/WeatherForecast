@@ -1,17 +1,21 @@
 import '../styles/app.scss';
 import React from 'react';
-import { daysOfWeek_full, weatherCodeDescriptions, weatherIcons, DAY_START, NIGHT_START, HOURS_PER_DAY, MIN_PER_HOUR } from './constants';
-import { formatUTCOffset } from './utils';
+import { DAY_START, NIGHT_START, HOURS_PER_DAY, MIN_PER_HOUR } from '../resources/constants';
+import { formatUTCOffset } from '../utils/utils';
 import DailyForecast from './DailyForecast';
 import TemperatureGraph from './TemperatureGraph';
 import CurrentWeather from './CurrentWeather';
 import moment from "moment-timezone";
+import { useSelector } from 'react-redux';
+import { weatherIcons } from '../resources/weathericons';
+import { translations, daysOfWeek_full, weatherCodeDescriptions } from '../resources/translations';
 
 
-const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {
-    
-    //важно обозначит, что компонент был отрендерен, теперь до него можно делать прокрутку экрана
+const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {  
+    //важно обозначить, что компонент был отрендерен, теперь до него можно делать прокрутку экрана
     React.useEffect(() => setIsWeatherComponentVisible(true), []);
+
+    const language = useSelector(state => state.language.language);
     
     const { daily, hourly, current_weather, current_weather_units } = data;
 
@@ -48,11 +52,11 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windo
     const tempUnits = current_weather_units.temperature[1];
     //сначала получаем дату для запроса с час. поясом "dataTimezone", а потом конвертируем в выбранный час. пояс "selectedTimezone"
     const date = moment.tz(hourly.time[selectedHourlyIndex], dataTimezone).tz(selectedTimezone);
-    const day = daysOfWeek_full[date.day()];
+    const day = daysOfWeek_full[language][date.day()];
     const hour = date.hour();
     const formattedTime = date.format("HH:mm");
     const weatherCode = hourly.weather_code[selectedHourlyIndex];
-    const weather = weatherCodeDescriptions[weatherCode];
+    const weather = weatherCodeDescriptions[language][weatherCode];
     const isDayTime = hour >= DAY_START && hour < NIGHT_START;
     const weatherIcon = React.useMemo(() => {
         return [0, 1, 2].includes(weatherCode)
@@ -87,7 +91,7 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windo
             <DailyForecast  daily={daily} 
                             selectedDay={selectedDay} 
                             setSelectedDay={setSelectedDay}/>
-            <p className='open-meteo'>Данные предоставлены <a target="_blank" rel='noreferrer' href="https://open-meteo.com/en/about">Open-Meteo.com</a></p>
+            <p className='open-meteo'>{translations[language].dataProvided} <a target="_blank" rel='noreferrer' href="https://open-meteo.com/en/about">Open-Meteo.com</a></p>
         </div>
     )
 });

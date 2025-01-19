@@ -1,8 +1,11 @@
 import '../styles/currentweather.scss';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 export default function CurrentWeather({weatherIcon, temp, windspeed, humidity, precipitationProbability, day, formattedTime, utcOffset, weather, tempUnits, latitude, longtitude}) {
+    const language = useSelector(state => state.language.language);
 
     return (
         <div className='current-weather'>
@@ -13,13 +16,13 @@ export default function CurrentWeather({weatherIcon, temp, windspeed, humidity, 
                 </div>  
                 <div className='current--all-params'>
                     <div className='current--other-params'>
-                        <p>широта: {latitude}°</p>
-                        <p>долгота: {longtitude}°</p>
+                        <p>{translations[language].weather_lat}: {latitude}°</p>
+                        <p>{translations[language].weather_long}: {longtitude}°</p>
                     </div> 
                     <div className='current--other-params'>
-                        <p>влажность: {humidity}%</p>
-                        <p>осадки: {precipitationProbability}%</p>
-                        <p>ветер: {windspeed} м/c</p>
+                        <p>{translations[language].weather_humidity}: {humidity}%</p>
+                        <p>{translations[language].weather_precipitation}: {precipitationProbability}%</p>
+                        <p>{translations[language].weather_wind}: {windspeed} {translations[language].weather_wind_units}</p>
                     </div>  
                 </div>     
             </div>

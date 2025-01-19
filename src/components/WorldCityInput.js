@@ -1,16 +1,18 @@
 import '../styles/sidebar.scss';
 import React from 'react';
-import { truncateString } from './utils';
-import { actionImages } from './allImages';
+import { truncateString } from '../utils/utils';
+import { actionImages } from '../resources/allImages';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 
-export default function WorldCityInput({language, chooseLanguage, setSelectedCity, worldCitiesMap, windowWidth}) {
-    
+export default function WorldCityInput({worldCitiesMap, setSelectedCity, isDataStillLoading, windowWidth}) {   
     const [inputValue, setInputValue] = React.useState('');//значение города в инпуте
     const [filteredCityList, setFilteredCityList] = React.useState([]);//список городов, начинающихся на значение в инпуте
     const [highlightedCityInputIndex, setHighlightedCityInputIndex] = React.useState(-1);//подсветка элементов списка городов в инпуте
-    
+    const language = useSelector(state => state.language.language);
+
     //ввод значений в инпут
     function handleInputWorldCity(e) {
         setSelectedCity(null);
@@ -28,11 +30,11 @@ export default function WorldCityInput({language, chooseLanguage, setSelectedCit
             const startsWithSample = [];
             const containsSample = [];        
             for (const item of database) {
-                if (language === 'RU') {
+                if (language === 'ru') {
                     const city_trans = item.city_trans.toLowerCase();
                     if (city_trans.startsWith(sample)) startsWithSample.push(item); 
                     else if (city_trans.includes(sample)) containsSample.push(item);
-                } else if (language === 'ENG') {
+                } else if (language === 'en') {
                     const city = item.city.toLowerCase();
                     if (city.startsWith(sample)) startsWithSample.push(item); 
                     else if (city.includes(sample)) containsSample.push(item);
@@ -47,8 +49,9 @@ export default function WorldCityInput({language, chooseLanguage, setSelectedCit
     }
 
     function selectCity(item) {
+        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
         if (!item) return;
-        setInputValue(language === 'RU' ? item.city_trans : item.city);
+        setInputValue(language === 'ru' ? item.city_trans : item.city);
         setFilteredCityList([]);
         setSelectedCity(item);
     };
@@ -77,8 +80,8 @@ export default function WorldCityInput({language, chooseLanguage, setSelectedCit
         let maxStringLen = 22;
         if (windowWidth <= 430) maxStringLen = 18;
         if (windowWidth <= 400) maxStringLen = 16;
-        const cityName = language === 'RU' ? item.city_trans : item.city;
-        const countryName = language === 'RU' ? item.country_trans : item.country
+        const cityName = language === 'ru' ? item.city_trans : item.city;
+        const countryName = language === 'ru' ? item.country_trans : item.country
 
         return <li  key={index}
                     className={`city-input--item${highlightedCityInputIndex === index ? ' highlighted' : ''}`}
@@ -91,21 +94,15 @@ export default function WorldCityInput({language, chooseLanguage, setSelectedCit
 
 
     return (
-        <div className='buttons-and-form-elem world-city'>
-            <div className='button-wrapper'>  
-                <button className={`side-button ${language === 'RU' ? 'active' : ''}`} onClick={()=>chooseLanguage('RU')}>RU</button>
-                <button className={`side-button ${language === 'ENG' ? 'active' : ''}`} onClick={()=>chooseLanguage('ENG')}>ENG</button>
-            </div>
-            <div className='city-input-wrapper'>
-                <p className='city-input--label'>Населенный пункт:</p>
-                <img src={actionImages['cross']} alt='erase' onClick={eraseCityInput}/>
-                <input  type="text"
-                        value={inputValue}
-                        placeholder="Введите город"
-                        onChange={handleInputWorldCity}
-                        onKeyDown={handleCityInputKeyDown}/>
-                {filteredCityList.length > 0 && <ul>{filteredCityListItems}</ul>}
-            </div>
+        <div className='city-input-wrapper'>
+            <p className='city-input--label'>{translations[language].worldCity}</p>
+            <img src={actionImages['cross']} alt='erase' onClick={eraseCityInput}/>
+            <input  type="text"
+                    value={inputValue}
+                    placeholder={translations[language].worldCity_placeholder}
+                    onChange={handleInputWorldCity}
+                    onKeyDown={handleCityInputKeyDown}/>
+            {filteredCityList.length > 0 && <ul>{filteredCityListItems}</ul>}
         </div>
     )
 }

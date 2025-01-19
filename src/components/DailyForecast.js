@@ -1,14 +1,17 @@
 import '../styles/dailyforecast.scss';
 import React from 'react';
-import { daysOfWeek_short, weatherIcons } from './constants';
+import { useSelector } from 'react-redux';
+import { weatherIcons } from '../resources/weathericons';
+import { daysOfWeek_short } from '../resources/translations';
 
 const DailyForecast = React.memo(({daily, selectedDay, setSelectedDay}) => {
+    const language = useSelector(state => state.language.language);
 
     //список элементов дней недели, по нажатию на которые можно посмотреть погоду в этот день
     const dailyForecast = React.useMemo(() => {
         return daily.time.map((item, index) => {
-            const day = daysOfWeek_short[(new Date(item).getDay())]
-            const weatherCode = daily.weathercode[index]
+            const day = daysOfWeek_short[language][(new Date(item).getDay())];
+            const weatherCode = daily.weathercode[index];
             const weatherIcon = [0, 1, 2].includes(weatherCode)
                 ? weatherIcons[weatherCode][0]
                 : weatherIcons[weatherCode];
@@ -25,7 +28,7 @@ const DailyForecast = React.memo(({daily, selectedDay, setSelectedDay}) => {
                         </p>
                     </li>
         })
-    }, [daily, selectedDay]) 
+    }, [daily, selectedDay, language]) 
 
     return (
         <ul className='daily-forecast'>

@@ -1,14 +1,17 @@
 import '../styles/search.scss';
-import { width_changeButtonsToPictures } from './constants';
-import { actionImages } from './allImages';
+import { width_changeButtonsToPictures } from '../resources/constants';
+import { actionImages } from '../resources/allImages';
 
 import React from 'react';
 import { GeolocationLoader } from './Loaders';
 import GeolocationErrorButton from './GeolocationErrorButton';
 import NumberInput from './NumberInput';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, isDataStillLoading, geolocationError, windowWidth}) => {
+    const language = useSelector(state => state.language.language);
     
     //поиск по нажатию Enter
     function handleKeyDown(e) {
@@ -23,7 +26,7 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
             <div className='left-block'>
                    
                 {windowWidth >= width_changeButtonsToPictures ?
-                    <button className='search--button' onClick={triggerSearchButton}>Поиск</button> : 
+                    <button className='search--button' onClick={triggerSearchButton}>{translations[language].searchButton}</button> : 
                     <img className='img-button search' src={actionImages['search']} alt='search' onClick={triggerSearchButton}/>
                 }            
                 <NumberInput
@@ -31,8 +34,8 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                     setInputValue={setInputLatitude}
                     min={-90}
                     max={90}
-                    placeholder={"Широта [-90; 90]"}
-                    inputSuffix={windowWidth <= 450 ? '° шир.' : '° широты'}
+                    placeholder={translations[language].inputLat_placeholder}
+                    inputSuffix={windowWidth <= 450 ? translations[language].inputLat_suffix_short : translations[language].inputLat_suffix_full}
                     isDataStillLoading={isDataStillLoading}
                     invalidInput={invalidInput}
                     inputWrapperStyle={"input-wrapper lat"}
@@ -42,8 +45,8 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                     setInputValue={setInputLongitude}
                     min={-180}
                     max={180}
-                    placeholder={"Долгота [-180; 180]"}
-                    inputSuffix={windowWidth <= 450 ? '° дол.' : '° долготы'}
+                    placeholder={translations[language].inputLong_placeholder}
+                    inputSuffix={windowWidth <= 450 ? translations[language].inputLong_suffix_short : translations[language].inputLong_suffix_full}
                     isDataStillLoading={isDataStillLoading}
                     invalidInput={invalidInput}
                     inputWrapperStyle={"input-wrapper long"}
@@ -55,7 +58,7 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                     <GeolocationErrorButton geolocationError={geolocationError} windowWidth={windowWidth}/> :
                     <GeolocationLoader hidden={geolocationLoading ? false : true}/>}
                 {windowWidth >= width_changeButtonsToPictures ?
-                    <button className='my-geolocation--button' onClick={getMyLocation}>Моя геолокация</button> : 
+                    <button className='my-geolocation--button' onClick={getMyLocation}>{translations[language].myGeolocationButton}</button> : 
                     <img className='img-button geolocation' src={actionImages['mygeolocation']} alt='my geolocation' onClick={getMyLocation}/>
                 }
             </div>

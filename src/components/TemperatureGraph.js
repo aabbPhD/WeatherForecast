@@ -1,5 +1,6 @@
 import '../styles/app.scss';
 import React from 'react';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -14,7 +15,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-import { HOURS_PER_DAY } from './constants';
+import { HOURS_PER_DAY } from '../resources/constants';
 
 ChartJS.register(
     CategoryScale,
@@ -46,7 +47,6 @@ export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIn
         labels: hours,
         datasets: [
             {
-                label: 'Температура (почасовая)',
                 data: values,
                 borderColor: 'rgba(22, 46, 181, 1)',
                 backgroundColor: 'rgba(22, 46, 181, 0.2)',
@@ -87,17 +87,7 @@ export default function TemperatureGraph({hourly, firstTimestamp, selectedDataIn
         maintainAspectRatio: windowWidth <= 500 ? false : true,
         plugins: {
             legend: {
-                position: 'top',
-                align: 'start',
-                onClick: () => {},
-                labels: {
-                    usePointStyle: true,
-                    pointStyle: 'line',
-                    color: 'rgba(0, 0, 0, 1)',
-                    font: {
-                        size: 22,
-                    }
-                },
+                display: false,
             },
             tooltip: {
                 enabled: false,

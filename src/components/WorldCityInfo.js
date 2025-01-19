@@ -1,17 +1,21 @@
 import '../styles/sidebar.scss';
-import { actionImages } from './allImages';
+import { actionImages } from '../resources/allImages';
 import React from 'react';
-import { truncateString } from './utils';
+import { truncateString } from '../utils/utils';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 
-export default function WorldCityInfo({language, selectedCity, setCoords ,windowWidth}) {
+export default function WorldCityInfo({selectedCity, windowWidth}) {
     const maxStringLen = 36;//урезаем строку при ширине экрана < 380
+    const language = useSelector(state => state.language.language);
+
     let cityName, countryName;
     if (selectedCity) {
-        cityName = language === 'RU' ? selectedCity.city_trans : selectedCity.city;
+        cityName = language === 'ru' ? selectedCity.city_trans : selectedCity.city;
         if (windowWidth <= 380) cityName = truncateString(cityName, maxStringLen);
-        countryName = language === 'RU' ? selectedCity.country_trans : selectedCity.country;
+        countryName = language === 'ru' ? selectedCity.country_trans : selectedCity.country;
         if (windowWidth <= 380) countryName = truncateString(countryName, maxStringLen);
     }  
 
@@ -19,18 +23,15 @@ export default function WorldCityInfo({language, selectedCity, setCoords ,window
         <div className='world-city-info'>
             {selectedCity ? 
             <>
-                <p className='var-name'>Населенный пункт:</p>
+                <p className='var-name'>{translations[language].worldCity}</p>
                 <div className='var-value'>{cityName}</div>
-                <p className='var-name'>Страна / Территория:</p>
+                <p className='var-name'>{translations[language].worldCity_country}</p>
                 <div className='var-value'>{countryName}</div>
-                <p className='var-name'>Координаты:</p>
-                <div className='var-value' onClick={windowWidth > 780 ? null : setCoords}>
+                <p className='var-name'>{translations[language].worldCity_coords}</p>
+                <div className='var-value'>
                     [{parseFloat(selectedCity.latitude).toFixed(3)}°; {parseFloat(selectedCity.longtitude).toFixed(3)}°]
-                    {(windowWidth > 780) ? 
-                        <p className='copy-coords' onClick={setCoords}>[скопировать]</p> :
-                        <img className='copy-coords-img' src={actionImages['copy']} alt='copy coords' onClick={setCoords}/>}
                 </div>
-            </> : <p className='city-not-selected'>Населенный пункт:</p>}
+            </> : <p className='city-not-selected'>{translations[language].worldCity}</p>}
             
         </div>
     )

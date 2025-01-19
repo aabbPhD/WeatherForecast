@@ -1,22 +1,25 @@
 import '../styles/app.scss';
-import { width_changeButtonsToPictures } from './constants';
-import { actionImages } from './allImages';
+import { width_changeButtonsToPictures } from '../resources/constants';
+import { actionImages } from '../resources/allImages';
 
 import React from 'react';
 import Search from './Search';
 import Weather from './Weather';
 import { WeatherLoader } from './Loaders';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 const MainContent = React.memo(({weatherRef, setIsWeatherComponentVisible, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, loading, searchTriggered, triggerSearchButton, isDataStillLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
+    const language = useSelector(state => state.language.language);
 
     //стартовое сообщение в основном блоке
     const startMessage = (windowWidth >= width_changeButtonsToPictures) ? 
-        <p className='app-msg'>Введите координаты</p> :
+        <p className='app-msg'>{translations[language].startMessage}</p> :
         <>
-            <p className='app-msg'>Введите координаты</p>
-            <p className='app-msg'><img src={actionImages['search']} alt='search'/> - поиск</p>
-            <p className='app-msg'><img src={actionImages['mygeolocation']} alt='search'/> - моя геолокация</p>
+            <p className='app-msg'>{translations[language].startMessage}</p>
+            <p className='app-msg'><img src={actionImages['search']} alt='search'/> - {translations[language].startMessage_search}</p>
+            <p className='app-msg'><img src={actionImages['mygeolocation']} alt='search'/> - {translations[language].startMessage_myGeolocation}</p>
         </>
     
     return (

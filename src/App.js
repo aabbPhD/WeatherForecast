@@ -1,17 +1,20 @@
 import './styles/reset.css';
 import './styles/global.scss';
 import './styles/app.scss';
-import { actionImages, weatherImages } from './components/allImages';
+import { actionImages, weatherImages } from './resources/allImages';
 
 import React from 'react';
 import MainContent from './components/MainContent';
 import Sidebar from './components/Sidebar';
-import { shallowCopy, delay } from './components/utils';
-import useWindowWidth from './components/useWindowWidth';
+import { shallowCopy, delay } from './utils/utils';
+import useWindowWidth from './hooks/useWindowWidth';
+import { useSelector } from 'react-redux';
+import { translations } from './resources/translations';
 
 
 function App() {
     const windowWidth = useWindowWidth();//хук для определения ширины экрана
+    const language = useSelector(state => state.language.language);//текущий язык
 
     //параметры для запроса
     const [inputLatitude, setInputLatitude] = React.useState(null);//широта в input
@@ -30,8 +33,8 @@ function App() {
     const [fetchedData, setFetchedData] = React.useState({'C': null, 'F': null});//данные, грузящиеся асинхронно [для введенных координат координат]
         
     //ошибки сервера
-    const [fetchError, setFecthError] = React.useState(null);
-    const [geolocationError, setGeolocationError] = React.useState(null);
+    const [weatherErrorCode, setWeatherErrorCode] = React.useState(null);
+    const [geolocationErrorCode, setGeolocationErrorCode] = React.useState(null);
 
     //АМ [key - название города на русском языке, data - вся информация о нем]
     const [worldCitiesMap, setWorldCitiesMap] = React.useState(null);
@@ -103,22 +106,30 @@ function App() {
                     fetch(getRequest(tempRequest_C)),
                     fetch(getRequest(tempRequest_F)),
                 ]);               
-                if (!response_C.ok) throw new Error(`Ошибка HTTP: ${response_C.status}`);
-                if (!response_F.ok) throw new Error(`Ошибка HTTP: ${response_F.status}`);
+                if (!response_C.ok || !response_F.ok) {
+                    const error = new Error();
+                    error.code = 'http_404';
+                    throw error;
+                }
                 const newData_C = await response_C.json();
                 const newData_F = await response_F.json();
 
                 //await delay(3000);//искуственная задержка ('плохой интернет')
 
                 //в идеале надо делать полную проверку на валидность данных?
-                if (!newData_C || !response_F) throw new Error(`Пришли невалидные данные`);
+                if (!newData_C || !response_F) {
+                    const error = new Error();
+                    error.code = 'invalidData';
+                    throw error;
+                }
                 setFetchedData({'C': newData_C, 'F': newData_F});
-                setFecthError(null);
+                setWeatherErrorCode(null);
             } catch (err) {
+                //ошибка внутри fetch (например, неправильный URL)
                 if (err.name === "TypeError" && err.message === "Failed to fetch") {
-                    setFecthError("Не удалось подключиться к серверу. Попробуйте позже.");
+                    setWeatherErrorCode('failedToFetch');
                 } else {
-                    setFecthError(err.message);
+                    setWeatherErrorCode(err.code);
                 }
             } finally {
                 setLoading(false);
@@ -172,28 +183,28 @@ function App() {
     function fetchLocation() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
-                reject(new Error("Невозможно получить доступ к вашей геолокации."));
+                reject({ code: 'fail' });
                 return;
             }
     
             navigator.geolocation.getCurrentPosition(
                 (position) => resolve(position.coords),
                 (err) => {
-                    let errorMessage
+                    let errorCode;
                     switch (err.code) {
                         case err.PERMISSION_DENIED:
-                            errorMessage = "Пользователь запретил доступ к определению геолокации.";
+                            errorCode = "noPermission";
                             break;
                         case err.POSITION_UNAVAILABLE:
-                            errorMessage = "Невозможно определить вашу локацию.";
+                            errorCode = "positionUnavailable";
                             break;
                         case err.TIMEOUT:
-                            errorMessage = "Превышено время ожидания ответа.";
+                            errorCode = "timeout";
                             break;
                         default:
-                            errorMessage = "Произошла неизвестная ошибка.";
+                            errorCode = "unknownError";
                     }
-                    reject(new Error(errorMessage))
+                    reject({ code: errorCode });
                 }
             );
         });
@@ -202,7 +213,7 @@ function App() {
     //определение координат моей геолокации
     const getMyLocation = React.useCallback(async () => {
         if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
-        setGeolocationError(null);
+        setGeolocationErrorCode(null);
         setGeolocationLoading(true);
         try {
             //await delay(3000);//искуственная задержка ('плохой интернет')
@@ -212,14 +223,18 @@ function App() {
             const formattedLong = Number(coords.longitude.toFixed(3));
             setInputLatitude(formattedLat);
             setInputLongitude(formattedLong);
-            setGeolocationError(null);
+            setGeolocationErrorCode(null);
         } catch (error) {
-            setGeolocationError(error.message);
+            setGeolocationErrorCode(error.code);
         } finally {
             setGeolocationLoading(false);
         }
     }, [isDataStillLoading]);
 
+
+    //на основе полученной ошибки выводим соответствующее сообщение
+    const fetchError = translations[language].fetchWeatherDataError[weatherErrorCode] || null;
+    const geolocationError = translations[language].fetchGeolocationError[geolocationErrorCode] || null;
 
     return (
         <div className="app">
@@ -252,6 +267,8 @@ function App() {
                      timezone={timezone}
                      setTimezone={setTimezone}
                      isDataStillLoading={isDataStillLoading}
+                     fetchWeatherData={fetchWeatherData}
+                     setSearchTriggered={setSearchTriggered}
                      geolocationError={geolocationError}
                      worldCitiesMap={worldCitiesMap}
                      windowWidth={windowWidth}/>

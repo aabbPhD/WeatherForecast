@@ -187,34 +187,7 @@
       @media screen and (max-width: 780px) {
         gap: 5px;
       }
-      &:last-of-type {
-        margin-bottom: 0;
-        @media screen and (max-width: 780px) {
-          color: vars.$main_theme_deep;
-          &:hover {
-            color: vars.$main_theme_deepest;
-            cursor: pointer;
-          } 
-        }
-      }
-    }
-
-    .copy-coords {
-      font-size: vars.$sidebar_medium_font;
-      color: vars.$main_theme_deep;
-      &:hover {
-        text-decoration: underline;
-        color: vars.$main_theme_deepest;
-        cursor: pointer;
-      }      
-    }
-
-    .copy-coords-img {
-      display: inline-block;
-      vertical-align: middle;
-      width: 18px;
-      height: 18px;
-      margin-top: -2px;
+      &:last-of-type { margin-bottom: 0; }
     }
   }
 

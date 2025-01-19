@@ -1,10 +1,13 @@
 import '../styles/search.scss';
-import { actionImages } from './allImages';
+import { actionImages } from '../resources/allImages';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { translations } from '../resources/translations';
 
 
 export default function GeolocationErrorButton({geolocationError, windowWidth}) {
     const [isMessageVisible, setIsMessageVisible] = React.useState(false);
+    const language = useSelector(state => state.language.language);
 
     function toggleMessage() {
         if (windowWidth > 980) return;
@@ -16,7 +19,7 @@ export default function GeolocationErrorButton({geolocationError, windowWidth}) 
             <img className='geolocation-error--img' src={actionImages['error']} alt='geolocation error' onClick={toggleMessage}/>
             {isMessageVisible && 
                 <div className='geolocation-error--msg'>
-                    <p className='warning'>Ошибка</p>
+                    <p className='warning'>{translations[language].error}</p>
                     <p>{geolocationError}</p>
                 </div>}
         </div>
