@@ -1,13 +1,13 @@
 import '../styles/search.scss';
-import { width_changeButtonsToPictures } from '../resources/constants';
-import { actionImages } from '../resources/allImages';
+import { width_changeButtonsToPictures } from '../config/constants';
+import { actionImages } from '../assets/allImages';
 
 import React from 'react';
 import { GeolocationLoader } from './Loaders';
 import GeolocationErrorButton from './GeolocationErrorButton';
 import NumberInput from './NumberInput';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, isDataStillLoading, geolocationError, windowWidth}) => {

@@ -1,8 +1,8 @@
 import '../styles/search.scss';
-import { actionImages } from '../resources/allImages';
+import { actionImages } from '../assets/allImages';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 export default function GeolocationErrorButton({geolocationError, windowWidth}) {

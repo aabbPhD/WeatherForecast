@@ -1,7 +1,7 @@
 import './styles/reset.css';
 import './styles/global.scss';
 import './styles/app.scss';
-import { actionImages, weatherImages } from './resources/allImages';
+import { actionImages, weatherImages } from './assets/allImages';
 
 import React from 'react';
 import MainContent from './components/MainContent';
@@ -9,7 +9,7 @@ import Sidebar from './components/Sidebar';
 import { shallowCopy, delay } from './utils/utils';
 import useWindowWidth from './hooks/useWindowWidth';
 import { useSelector } from 'react-redux';
-import { translations } from './resources/translations';
+import { translations } from './config/translations';
 
 
 function App() {

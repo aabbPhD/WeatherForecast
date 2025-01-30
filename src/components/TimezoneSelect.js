@@ -1,6 +1,6 @@
 import '../styles/sidebar.scss';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 export default function TimezoneSelect({timezone, setTimezone, isDataStillLoading}) {

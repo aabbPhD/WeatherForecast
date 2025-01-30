@@ -1,14 +1,14 @@
 import '../styles/app.scss';
 import React from 'react';
-import { DAY_START, NIGHT_START, HOURS_PER_DAY, MIN_PER_HOUR } from '../resources/constants';
+import { DAY_START, NIGHT_START, HOURS_PER_DAY, MIN_PER_HOUR } from '../config/constants';
 import { formatUTCOffset } from '../utils/utils';
 import DailyForecast from './DailyForecast';
 import TemperatureGraph from './TemperatureGraph';
 import CurrentWeather from './CurrentWeather';
 import moment from "moment-timezone";
 import { useSelector } from 'react-redux';
-import { weatherIcons } from '../resources/weathericons';
-import { translations, daysOfWeek_full, weatherCodeDescriptions } from '../resources/translations';
+import { weatherIcons } from '../config/weathericons';
+import { translations, daysOfWeek_full, weatherCodeDescriptions } from '../config/translations';
 
 
 const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {  

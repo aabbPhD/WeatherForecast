@@ -1,13 +1,13 @@
 import '../styles/app.scss';
-import { width_changeButtonsToPictures } from '../resources/constants';
-import { actionImages } from '../resources/allImages';
+import { width_changeButtonsToPictures } from '../config/constants';
+import { actionImages } from '../assets/allImages';
 
 import React from 'react';
 import Search from './Search';
 import Weather from './Weather';
 import { WeatherLoader } from './Loaders';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 const MainContent = React.memo(({weatherRef, setIsWeatherComponentVisible, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, loading, searchTriggered, triggerSearchButton, isDataStillLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {

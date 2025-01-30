@@ -15,7 +15,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-import { HOURS_PER_DAY } from '../resources/constants';
+import { HOURS_PER_DAY } from '../config/constants';
 
 ChartJS.register(
     CategoryScale,

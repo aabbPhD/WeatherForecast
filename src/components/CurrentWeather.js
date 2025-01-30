@@ -1,7 +1,7 @@
 import '../styles/currentweather.scss';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 export default function CurrentWeather({weatherIcon, temp, windspeed, humidity, precipitationProbability, day, formattedTime, utcOffset, weather, tempUnits, latitude, longtitude}) {

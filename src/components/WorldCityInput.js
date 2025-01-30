@@ -1,9 +1,9 @@
 import '../styles/sidebar.scss';
 import React from 'react';
 import { truncateString } from '../utils/utils';
-import { actionImages } from '../resources/allImages';
+import { actionImages } from '../assets/allImages';
 import { useSelector } from 'react-redux';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 

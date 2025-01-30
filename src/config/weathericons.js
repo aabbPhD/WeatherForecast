@@ -1,4 +1,4 @@
-import { weatherImages } from "./allImages";
+import { weatherImages } from "../assets/allImages";
 
 const { clear_day, clear_night, partly_cloudy_day, partly_cloudy_night, overcast, fog, drizzle, 
     rain, snow_shower, slight_snow, moderate_snow, heavy_snow, rain_shower, thunderstorm, rain_with_thunderstorm } = weatherImages;

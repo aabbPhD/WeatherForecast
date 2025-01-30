@@ -1,8 +1,8 @@
 import '../styles/dailyforecast.scss';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { weatherIcons } from '../resources/weathericons';
-import { daysOfWeek_short } from '../resources/translations';
+import { weatherIcons } from '../config/weathericons';
+import { daysOfWeek_short } from '../config/translations';
 
 const DailyForecast = React.memo(({daily, selectedDay, setSelectedDay}) => {
     const language = useSelector(state => state.language.language);

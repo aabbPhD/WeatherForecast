@@ -5,7 +5,7 @@ import WorldCityInput from './WorldCityInput';
 import WorldCityInfo from './WorldCityInfo';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLanguage } from '../store/Store';
-import { translations } from '../resources/translations';
+import { translations } from '../config/translations';
 
 
 const Sidebar = React.memo(({setInputLatitude, setInputLongitude, tempUnits, setTempUnits, timezone, setTimezone, isDataStillLoading, fetchWeatherData, setSearchTriggered, geolocationError, worldCitiesMap, windowWidth}) => {
