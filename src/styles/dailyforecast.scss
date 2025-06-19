@@ -1,0 +1,54 @@
+@use "vars";
+
+
+.daily-forecast {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    user-select: none;
+  
+    .daily-forecast--item{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: vars.$elem_width;
+      box-sizing: border-box;
+      border: 7px white solid;
+      @media screen and (max-width: 980px) {
+        width: vars.$elem_width_980;
+      }
+      &:hover {      
+        border: 7px vars.$weather_theme solid;
+        cursor: pointer;
+      }
+      &.active {
+        border: 7px vars.$main_theme_deep solid;
+      }
+
+      .daily-forecast--day {
+        font-size: 20px;
+      }
+
+      .daily-forecast--weather-icon {
+        width: 50px;
+        height: 50px;
+        @media screen and (max-width: 540px) {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      .daily-forecast--temp {
+        @media screen and (max-width: 640px) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+  
+      span {
+        font-size: 16px;
+      }
+    }
+  }

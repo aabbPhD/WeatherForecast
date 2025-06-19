@@ -1,0 +1,210 @@
+@use "vars";
+
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 270px;
+  width: 270px;
+  height: 650px;
+  font-size: vars.$sidebar_big_font;
+  background-color: white;
+  padding: 8px 10px;
+  @media screen and (max-width: 980px) {
+    flex-direction: row;
+    width: 98%;
+    height: 100px;
+    font-size: vars.$sidebar_medium_font;
+    padding: 0;
+  }
+  @media screen and (max-width: 690px) {
+    flex-direction: column;
+    align-items: normal;
+    height: 145px;
+  }
+  &.city-selected {
+    @media screen and (max-width: 690px) {
+      height: 185px;
+    }
+  }
+  
+
+  .set-params-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    @media screen and (max-width: 980px) {
+      flex-direction: row;
+    }
+  }
+
+  .buttons-and-form-elem {
+    width: vars.$sidebar_block_width;
+    @media screen and (max-width: 980px) {
+      width: vars.$sidebar_block_width_980;
+    }
+
+    &.world-city {
+      @media screen and (max-width: 980px) {
+        width: 220px;
+      }
+      @media screen and (max-width: 690px) {
+        width: vars.$sidebar_block_width_980;
+      }
+    }
+  }
+
+  .button-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+
+    .side-button {
+      @include vars.btn;
+      width: 45%;
+    }
+  }
+
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    user-select: none;
+
+    #timezone-select {
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      padding: 22px 0px 0px 5px;
+      border: 1px blue solid;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    label[for="timezone-select"] {
+      position: absolute;
+      top: 5px;
+      left: 8px;
+      color: vars.$main_theme_deepest;
+    }
+  }
+
+  .city-input-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60px;
+
+    .city-input--label {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      color: vars.$main_theme_deepest;
+      margin-bottom: 5px;
+      user-select: none;
+    }
+
+    input {
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      padding: 22px 0px 0px 10px;
+      border: 1px blue solid;
+      border-radius: 5px;
+    }
+
+    ul {
+      background-color: white;
+      border: 1px blue solid;
+      border-radius: 5px;
+
+      .city-input--item {
+        height: 50px;
+        padding: 5px 0 5px 10px;  
+        cursor: pointer;
+  
+        .city-name {}
+        .country-name {color: vars.$secondary_color;}
+        &.highlighted, &.highlighted p {
+          background-color: rgb(25, 103, 210);
+          color: white;
+        }
+      }
+    }
+
+    img {
+      position: absolute;
+      top: 50%; 
+      right: 2px;
+      transform: translate(0,-50%);
+      width: 14px;
+      height: 14px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .world-city-info {
+    line-height: 20px;
+    @include vars.sidebar-info-block;
+    
+    @media screen and (max-width: 980px) {
+      flex: 1;
+      height: 100%;
+      min-height: 100%;
+      line-height: 16px;
+    }
+    @media screen and (max-width: 690px) {
+      width: 100%;
+      min-height: 0;
+      border-radius: 0;
+    }
+
+    .city-not-selected {
+      font-size: 16px;
+      color: vars.$main_theme_deepest;
+    }
+
+    .var-name {
+      color: vars.$main_theme_deepest;
+      margin-bottom: 3px;
+      @media screen and (max-width: 980px) {
+        display: none;
+      }
+    }
+    .var-value {
+      color: vars.$main_color;
+      margin-bottom: 7px;
+      @media screen and (max-width: 980px) {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+      }
+      @media screen and (max-width: 780px) {
+        gap: 5px;
+      }
+      &:last-of-type { margin-bottom: 0; }
+    }
+  }
+
+  .geolocation-error {
+    line-height: 24px;    
+    font-size: 18px;
+    color: red;
+    @include vars.sidebar-info-block;
+    
+    @media screen and (max-width: 980px) {
+      display: none;
+    }
+
+    & .warning {
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+  } 
+}
