@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { translations } from '../config/translations';
 
 
-const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, isDataStillLoading, geolocationError, windowWidth}) => {
+const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
     const language = useSelector(state => state.language.language);
     
     //поиск по нажатию Enter
@@ -36,7 +36,6 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                     max={90}
                     placeholder={translations[language].inputLat_placeholder}
                     inputSuffix={windowWidth <= 450 ? translations[language].inputLat_suffix_short : translations[language].inputLat_suffix_full}
-                    isDataStillLoading={isDataStillLoading}
                     invalidInput={invalidInput}
                     inputWrapperStyle={"input-wrapper lat"}
                 />
@@ -47,7 +46,6 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                     max={180}
                     placeholder={translations[language].inputLong_placeholder}
                     inputSuffix={windowWidth <= 450 ? translations[language].inputLong_suffix_short : translations[language].inputLong_suffix_full}
-                    isDataStillLoading={isDataStillLoading}
                     invalidInput={invalidInput}
                     inputWrapperStyle={"input-wrapper long"}
                 />

@@ -2,13 +2,12 @@ import React from 'react';
 import '../styles/search.scss';
 
 
-export default function NumberInput({inputValue, setInputValue, min, max, placeholder, inputSuffix, isDataStillLoading, invalidInput, inputWrapperStyle}) {
+export default function NumberInput({inputValue, setInputValue, min, max, placeholder, inputSuffix, invalidInput, inputWrapperStyle}) {
     
     //при вводе значений в инпут делаем валидацию данных
     function handleChange(e) {
         let value = e.target.value;
 
-        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
         if (value === "" || value === "-") {
             setInputValue(value);
             return;

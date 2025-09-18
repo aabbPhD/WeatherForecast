@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import { translations } from '../config/translations';
 
 
-export default function TimezoneSelect({timezone, setTimezone, isDataStillLoading}) {
+export default function TimezoneSelect({timezone, setTimezone, dataLoading}) {
     const language = useSelector(state => state.language.language);
 
     function selectTimezone(e) {
-        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
+        if (dataLoading) return;//прошлые данные еще не загрузились, пока не реагируем
         setTimezone(e.target.value);
     }
 

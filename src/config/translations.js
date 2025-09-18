@@ -16,6 +16,7 @@ export const translations = {
             http_404: "404: Страница не найдена.", 
             invalidData: "Пришли невалидные данные", 
             failedToFetch: "Не удалось подключиться к серверу. Попробуйте позже.", 
+            RequestTimeout: "Время ожидания запроса истекло. Попробуйте позже."
         },
         fetchGeolocationError: {
             fail: "Невозможно получить доступ к вашей геолокации.", 
@@ -72,6 +73,7 @@ export const translations = {
             http_404: "404: Page not found.", 
             invalidData: "Received invalid data.", 
             failedToFetch: "Failed to connect. Please try again later.", 
+            RequestTimeout: "Request timeout. Please try again later."
         },
         fetchGeolocationError: {
             fail: "Failed to access your geolocation.", 

@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { translations } from '../config/translations';
 
 
-const MainContent = React.memo(({weatherRef, setIsWeatherComponentVisible, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, loading, searchTriggered, triggerSearchButton, isDataStillLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
+const MainContent = React.memo(({weatherRef, startMessageShown, setIsWeatherComponentVisible, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, curLatitude, curLongitude, currentData, tempUnits, timezone, invalidInput, triggerSearchButton, dataLoading, fetchError, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
     const language = useSelector(state => state.language.language);
 
     //стартовое сообщение в основном блоке
@@ -32,22 +32,23 @@ const MainContent = React.memo(({weatherRef, setIsWeatherComponentVisible, input
                     invalidInput={invalidInput}
                     getMyLocation={getMyLocation}
                     geolocationLoading={geolocationLoading}
-                    isDataStillLoading={isDataStillLoading}
                     geolocationError={geolocationError}
                     windowWidth={windowWidth}/>
 
-            {!fetchError && !searchTriggered && !currentData['C'] && !currentData['F'] && 
-                startMessage}
-            {!fetchError && searchTriggered && loading 
+            {startMessageShown && startMessage}
+            {fetchError === null && dataLoading 
                 ? <WeatherLoader/> 
-                : (currentData['C'] && currentData['F'] && <Weather data={currentData[tempUnits]} 
-                                                                    latitude={curLatitude}
-                                                                    longtitude={curLongitude}
-                                                                    selectedTimezone={timezone}
-                                                                    windowWidth={windowWidth}
-                                                                    weatherRef={weatherRef}
-                                                                    setIsWeatherComponentVisible={setIsWeatherComponentVisible}/>)}
-            {fetchError && <p className='app-msg error'>{fetchError}</p>}
+                : (currentData['C'] && currentData['F'] && !fetchError) 
+                    ? <Weather 
+                        data={currentData[tempUnits]}
+                        latitude={curLatitude}
+                        longtitude={curLongitude}
+                        selectedTimezone={timezone}
+                        windowWidth={windowWidth}
+                        weatherRef={weatherRef}
+                        setIsWeatherComponentVisible={setIsWeatherComponentVisible}
+                    />
+                    : <p className='app-msg error'>{fetchError}</p>}
         </div>
     );
 });

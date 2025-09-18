@@ -6,7 +6,7 @@ import { actionImages, weatherImages } from './assets/allImages';
 import React from 'react';
 import MainContent from './components/MainContent';
 import Sidebar from './components/Sidebar';
-import { shallowCopy, delay } from './utils/utils';
+import { delay } from './utils/utils';
 import useWindowWidth from './hooks/useWindowWidth';
 import { useSelector } from 'react-redux';
 import { translations } from './config/translations';
@@ -15,6 +15,9 @@ import { translations } from './config/translations';
 function App() {
     const windowWidth = useWindowWidth();//хук для определения ширины экрана
     const language = useSelector(state => state.language.language);//текущий язык
+
+    //стартовое сообщение (пока не был в первый раз выполнен fetch запрос)
+    const [startMessageShown, setStartMessageShown] = React.useState(true);
 
     //параметры для запроса
     const [inputLatitude, setInputLatitude] = React.useState(null);//широта в input
@@ -26,7 +29,7 @@ function App() {
     const [timezone, setTimezone] = React.useState('Europe/Moscow');//временная зона
 
     //загрузка данных
-    const [loading, setLoading] = React.useState(false);//происходит загрузка данных о погоде
+    const [dataLoading, setDataLoading] = React.useState(false);//происходит загрузка данных о погоде
     const [geolocationLoading, setGeolocationLoading] = React.useState(false);//происходит загрузка координат моей геолокации
     const [searchTriggered, setSearchTriggered] = React.useState(false);//триггер кнопки поиска, выводит на экран новые данные, если они уже загружены. если нет - блокирует действия до конца загрузки
     const [currentData, setCurrentData] = React.useState({'C': null, 'F': null});//данные на экране
@@ -76,80 +79,94 @@ function App() {
         } 
     }, [isWeatherComponentVisible, windowWidth]);
 
-    //асинхронная загрузка данных при изменении координат (и если они не совпадают с текущими) 
+    //при любом изменении значений - стили некорректного ввода сбрасываются
     React.useEffect(() => {
-        setInvalidInput(false);//при любом изменении значений - стили некорректного ввода сбрасываются
-        if (checkDataValidity()) fetchWeatherData(inputLatitude, inputLongitude, tempUnits);       
+        setInvalidInput(false); 
     }, [inputLatitude, inputLongitude]);   
 
     //рендеринг данных при триггере поиска и по окончанию загрузки
     React.useEffect(() => {
-        if (searchTriggered && !loading && checkFetchedDataExistance()) {
+        if (searchTriggered && !dataLoading && checkFetchedDataExistance()) {
             updateData();            
             setSearchTriggered(false);
         }
-    }, [searchTriggered, loading, fetchedData]);
+    }, [searchTriggered, dataLoading, fetchedData]);
 
     //запрос к серверу для получения данных о погоде
     async function fetchWeatherData(latitude, longitude) {
-        if (checkDataValidity()) {
-            setLoading(true);
-            try {
-                const tempRequest_C = '';
-                const tempRequest_F = '&temperature_unit=fahrenheit';
-                const getRequest = (tempRequest) => {
-                    return `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}${tempRequest}&hourly=relative_humidity_2m,precipitation_probability,temperature_2m,wind_speed_10m,weather_code&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=${timezone}`;
-                    //return `https://invalid-hostname.com`;//не удалось подключиться к серверу
-                    //return 'https://api.open-meteo.com/v1/nonexistent-endpoint';//ошибка 404
-                }
-                const [response_C, response_F] = await Promise.all([
-                    fetch(getRequest(tempRequest_C)),
-                    fetch(getRequest(tempRequest_F)),
-                ]);               
-                if (!response_C.ok || !response_F.ok) {
-                    const error = new Error();
-                    error.code = 'http_404';
-                    throw error;
-                }
-                const newData_C = await response_C.json();
-                const newData_F = await response_F.json();
+        if (startMessageShown) setStartMessageShown(false);
 
-                //await delay(3000);//искуственная задержка ('плохой интернет')
+        setDataLoading(true);
 
-                //в идеале надо делать полную проверку на валидность данных?
-                if (!newData_C || !response_F) {
-                    const error = new Error();
-                    error.code = 'invalidData';
-                    throw error;
-                }
-                setFetchedData({'C': newData_C, 'F': newData_F});
-                setWeatherErrorCode(null);
-            } catch (err) {
-                //ошибка внутри fetch (например, неправильный URL)
-                if (err.name === "TypeError" && err.message === "Failed to fetch") {
-                    setWeatherErrorCode('failedToFetch');
-                } else {
-                    setWeatherErrorCode(err.code);
-                }
-            } finally {
-                setLoading(false);
+        //если данные долго грузятся - отменяем
+        const controller = new AbortController();
+        const REQUEST_TIMEOUT = 10000;//время ожидания (80 - для тестирования переменного успеха)
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, REQUEST_TIMEOUT);
+
+        try {
+            const tempRequest_C = '';
+            const tempRequest_F = '&temperature_unit=fahrenheit';
+            const getRequest = (tempRequest) => { 
+                return `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}${tempRequest}&hourly=relative_humidity_2m,precipitation_probability,temperature_2m,wind_speed_10m,weather_code&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=${timezone}`;
+                //return `https://httpbin.org/delay/${(REQUEST_TIMEOUT / 1000) + 1}`;//таймаут (REQUEST_TIMEOUT + 1 секунда)
+                //return `https://invalid-hostname.com`;//не удалось подключиться к серверу
+                //return 'https://api.open-meteo.com/v1/nonexistent-endpoint';//ошибка 404
             }
+            const [response_C, response_F] = await Promise.all([
+                fetch(getRequest(tempRequest_C), { signal: controller.signal }),
+                fetch(getRequest(tempRequest_F), { signal: controller.signal }),
+            ]);  
+            
+            clearTimeout(timeoutId);
+
+            if (!response_C.ok || !response_F.ok) {
+                const error = new Error();
+                error.code = 'http_404';
+                throw error;
+            }
+            const newData_C = await response_C.json();
+            const newData_F = await response_F.json();
+
+            //await delay(3000);//искуственная задержка ('плохой интернет')
+
+            //в идеале надо делать полную проверку на валидность данных?
+            if (!newData_C || !response_F) {
+                const error = new Error();
+                error.code = 'invalidData';
+                throw error;
+            }
+            setFetchedData({'C': newData_C, 'F': newData_F});
+            setWeatherErrorCode(null);
+        } catch (err) {
+            clearTimeout(timeoutId);
+            setFetchedData({'C': null, 'F': null});
+            setCurrentData({'C': null, 'F': null});
+
+            if (err.name === "AbortError") {
+                setWeatherErrorCode('RequestTimeout');
+            }  
+            //ошибка внутри fetch (например, неправильный URL)
+            else if (err.name === "TypeError" && err.message === "Failed to fetch") {
+                setWeatherErrorCode('failedToFetch');
+            } else {
+                setWeatherErrorCode(err.code);
+            }
+        } finally {
+            setDataLoading(false);
         }
     };
     
     //когда данные загрузились, при нажатии поиска данные обновляются и выводятся на экран
     function updateData() {
-        setCurrentData(shallowCopy(fetchedData));
+        setCurrentData(structuredClone(fetchedData));
         setCurLatitude(inputLatitude);
         setCurLongitude(inputLongitude);
     }
 
     //проверка, что подгруженные данные существуют 
-    //(в идеале надо сравнивать и то, что они именно для тех координат, НО в ответе от сервера координаты отличаются на небольшую величину)
-    const checkFetchedDataExistance = () => (fetchedData['C'] && fetchedData['F']);
-
-    //если мы нажали поиск, а данные еще грузятся - выводим лоадер и блокируем некоторые кнопки
-    const isDataStillLoading = React.useCallback(() => (searchTriggered && loading), [searchTriggered]);
+    const checkFetchedDataExistance = () => (fetchedData['C'] !== null && fetchedData['F']  !== null);
 
     //проверка введенных координат на валидность
     function checkDataValidity() {
@@ -161,23 +178,24 @@ function App() {
         return true;
     }   
 
-    //по нажатию Поиска выводим данные по готовности
-    const triggerSearchButton = React.useCallback(() => {
-        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
-        if (!checkDataValidity()) {
-            setInvalidInput(true);
-            return;
-        }
+    //ф-ия, срабатывающая при нажатии кнопки Поиска
+    function triggerSearchButton() { 
+        if (dataLoading || geolocationLoading) return;
+
+        setWeatherErrorCode(null);
+
         //если значения координат совпадают с текущими, значит ничего подгружать не надо
         if (curLatitude !== null && curLongitude !== null && 
-            parseFloat(inputLatitude) === parseFloat(curLatitude) && parseFloat(inputLongitude) === parseFloat(curLongitude)) return;
-        
-        setSearchTriggered(true);
-        if (!loading && checkFetchedDataExistance()) {
-            updateData();
-            setSearchTriggered(false);
+            parseFloat(inputLatitude) === parseFloat(curLatitude) && 
+            parseFloat(inputLongitude) === parseFloat(curLongitude)) return;
+
+        if (checkDataValidity()) {
+            fetchWeatherData(inputLatitude, inputLongitude);
+            setSearchTriggered(true);
+        } else {
+            setInvalidInput(true);
         }
-    }, [inputLatitude, curLatitude, inputLongitude, curLongitude, loading]);
+    }
 
     //запрос к серверу для получения геолокации
     function fetchLocation() {
@@ -211,8 +229,8 @@ function App() {
     }
 
     //определение координат моей геолокации
-    const getMyLocation = React.useCallback(async () => {
-        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
+    async function getMyLocation() {
+        if (dataLoading || geolocationLoading) return;//прошлые данные еще не загрузились, пока не реагируем
         setGeolocationErrorCode(null);
         setGeolocationLoading(true);
         try {
@@ -229,16 +247,17 @@ function App() {
         } finally {
             setGeolocationLoading(false);
         }
-    }, [isDataStillLoading]);
+    }
 
 
     //на основе полученной ошибки выводим соответствующее сообщение
-    const fetchError = translations[language].fetchWeatherDataError[weatherErrorCode] || null;
-    const geolocationError = translations[language].fetchGeolocationError[geolocationErrorCode] || null;
+    const fetchError = weatherErrorCode !== null ? translations[language].fetchWeatherDataError[weatherErrorCode] : null;
+    const geolocationError = geolocationErrorCode !== null ? translations[language].fetchGeolocationError[geolocationErrorCode] : null;
 
     return (
         <div className="app">
             <MainContent weatherRef={weatherRef}
+                         startMessageShown={startMessageShown}
                          setIsWeatherComponentVisible={setIsWeatherComponentVisible}
                          inputLatitude={inputLatitude}
                          inputLongitude={inputLongitude}
@@ -250,10 +269,8 @@ function App() {
                          tempUnits={tempUnits}
                          timezone={timezone}
                          invalidInput={invalidInput}
-                         loading={loading}
-                         searchTriggered={searchTriggered}
                          triggerSearchButton={triggerSearchButton} 
-                         isDataStillLoading={isDataStillLoading}
+                         dataLoading={dataLoading}
                          fetchError={fetchError}
                          getMyLocation={getMyLocation}
                          geolocationLoading={geolocationLoading}
@@ -266,9 +283,11 @@ function App() {
                      setTempUnits={setTempUnits}
                      timezone={timezone}
                      setTimezone={setTimezone}
-                     isDataStillLoading={isDataStillLoading}
+                     dataLoading={dataLoading}
+                     geolocationLoading={geolocationLoading}
                      fetchWeatherData={fetchWeatherData}
                      setSearchTriggered={setSearchTriggered}
+                     setWeatherErrorCode={setWeatherErrorCode}
                      geolocationError={geolocationError}
                      worldCitiesMap={worldCitiesMap}
                      windowWidth={windowWidth}/>

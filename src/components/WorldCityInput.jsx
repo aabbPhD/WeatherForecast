@@ -7,7 +7,7 @@ import { translations } from '../config/translations';
 
 
 
-export default function WorldCityInput({worldCitiesMap, setSelectedCity, isDataStillLoading, windowWidth}) {   
+export default function WorldCityInput({worldCitiesMap, setSelectedCity, dataLoading, geolocationLoading, windowWidth}) {   
     const [inputValue, setInputValue] = React.useState('');//значение города в инпуте
     const [filteredCityList, setFilteredCityList] = React.useState([]);//список городов, начинающихся на значение в инпуте
     const [highlightedCityInputIndex, setHighlightedCityInputIndex] = React.useState(-1);//подсветка элементов списка городов в инпуте
@@ -49,7 +49,7 @@ export default function WorldCityInput({worldCitiesMap, setSelectedCity, isDataS
     }
 
     function selectCity(item) {
-        if (isDataStillLoading()) return;//прошлые данные еще не загрузились, пока не реагируем
+        if (dataLoading || geolocationLoading) return;//прошлые данные еще не загрузились, пока не реагируем
         if (!item) return;
         setInputValue(language === 'ru' ? item.city_trans : item.city);
         setFilteredCityList([]);
