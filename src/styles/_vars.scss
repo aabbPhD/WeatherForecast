@@ -12,31 +12,94 @@ $sidebar_medium_font: 14px;
 $sidebar_small_font: 12px;
 
 //COLORS
-$main_color: black;
-$secondary_color: rgb(112, 117, 122);
-$weather_theme: rgb(159, 170, 253);
-$search_theme: rgb(228, 230, 255);
-$main_theme: rgb(77, 98, 255);
-$main_theme_darker: rgb(49, 73, 255);
-$main_theme_deep: rgb(58, 74, 194);
-$main_theme_deepest: darkblue;
-$sidebar_info: aliceblue;
+
+.neutral-theme {
+  --main-color: black;
+  --secondary-color: rgb(112, 117, 122);
+  --weather-text-color: black;
+  --sidebar-label-color: darkblue;
+  --sidebar-value-color: white;
+  --sidebar-border-color: blue;
+
+  --weather-color-light: rgb(228, 230, 255);
+  --weather-color-hover: rgb(159, 170, 253);
+  --weather-color-deep: rgb(58, 74, 194);
+
+  --button-color: white;
+  --button-background: rgb(77, 98, 255);
+  --button-background-darker: rgb(49, 73, 255);
+  --button-background-deep: rgb(58, 74, 194);
+
+  --main-msg-color: rgb(77, 98, 255);
+  --error-msg-color: red;
+  --search-border: blue;
+  --openmeteo-color: rgb(77, 98, 255);
+  --openmeteo-color-hover: rgb(58, 74, 194);
+}
+
+.night-theme {
+  --main-color: white;
+  --secondary-color: rgb(206, 206, 206);
+  --weather-text-color: white;
+  --sidebar-label-color: darkblue;
+  --sidebar-value-color: black;
+  --sidebar-border-color: blue;
+
+  --weather-color-light: #fbdf78;
+  --weather-color-hover: #ebc024;
+  --weather-color-deep: #e28700;
+
+  --button-color: black;
+  --button-background: #FFD740;
+  --button-background-darker: #ebc024;
+  --button-background-deep: #e28700;
+
+  --main-msg-color: #fbdf78;
+  --error-msg-color: rgb(178, 59, 0);
+  --search-border: #e2da00;
+  --openmeteo-color: #FFD740;
+  --openmeteo-color-hover: #e28700;
+}
+
+.day-theme {
+  --main-color: black;
+  --secondary-color: rgb(45, 45, 45);
+  --weather-text-color: black;
+  --sidebar-label-color: darkblue;
+  --sidebar-value-color: black;
+  --sidebar-border-color: blue;
+
+  --weather-color-light: rgb(228, 230, 255);
+  --weather-color-hover: rgb(85, 105, 251);
+  --weather-color-deep: rgb(58, 74, 194);
+
+  --button-color: black;
+  --button-background: #ffe159	;
+  --button-background-darker: #efcb2b;
+  --button-background-deep: #f2ac33;
+
+  --main-msg-color: rgb(11, 0, 168);
+  --error-msg-color: rgb(178, 0, 0);
+  --search-border: #ffe600;
+  --openmeteo-color: rgb(46, 34, 220);
+  --openmeteo-color-hover: rgb(15, 6, 137);
+}
 
 @mixin btn {
   height: 30px;
   font-size: $sidebar_big_font;
   text-decoration: none;
-  color: white;
-  background-color: $main_theme;
+  color: var(--button-color);
+  background-color: var(--button-background);
   border: none;
   border-radius: 5px;    
   user-select: none;
   &:hover {
-    background-color: $main_theme_darker;
+    background-color: var(--button-background-darker);
     cursor: pointer;
   }
   &.active {
-    background-color: $main_theme_deep;
+    background-color: var(--button-background-deep);
   }
 }
 
@@ -48,7 +111,7 @@ $sidebar_info: aliceblue;
 
 @mixin sidebar-info-block {
   width: $sidebar_block_width;
-  background-color: $search_theme;
+  background-color: var(--weather-color-light);
   padding: 10px;
   border-radius: 5px;
   @media screen and (max-width: 980px) {

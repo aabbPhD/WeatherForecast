@@ -10,7 +10,7 @@
   width: 270px;
   height: 650px;
   font-size: vars.$sidebar_big_font;
-  background-color: white;
+  //background-color: white;
   padding: 8px 10px;
   @media screen and (max-width: 980px) {
     flex-direction: row;
@@ -81,7 +81,7 @@
       height: 100%;
       background-color: white;
       padding: 22px 0px 0px 5px;
-      border: 1px blue solid;
+      border: 1px var(--sidebar-border-color) solid;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -90,7 +90,7 @@
       position: absolute;
       top: 5px;
       left: 8px;
-      color: vars.$main_theme_deepest;
+      color: var(--sidebar-label-color);;
     }
   }
 
@@ -103,7 +103,7 @@
       position: absolute;
       top: 5px;
       left: 10px;
-      color: vars.$main_theme_deepest;
+      color: var(--sidebar-label-color);;
       margin-bottom: 5px;
       user-select: none;
     }
@@ -113,13 +113,13 @@
       height: 100%;
       background-color: white;
       padding: 22px 0px 0px 10px;
-      border: 1px blue solid;
+      border: 1px var(--sidebar-border-color) solid;
       border-radius: 5px;
     }
 
     ul {
       background-color: white;
-      border: 1px blue solid;
+      border: 1px var(--sidebar-border-color) solid;
       border-radius: 5px;
 
       .city-input--item {
@@ -128,7 +128,7 @@
         cursor: pointer;
   
         .city-name {}
-        .country-name {color: vars.$secondary_color;}
+        .country-name {color: rgb(206, 206, 206);}
         &.highlighted, &.highlighted p {
           background-color: rgb(25, 103, 210);
           color: white;
@@ -167,18 +167,18 @@
 
     .city-not-selected {
       font-size: 16px;
-      color: vars.$main_theme_deepest;
+      color: var(--sidebar-label-color);
     }
 
     .var-name {
-      color: vars.$main_theme_deepest;
+      color: var(--sidebar-label-color);
       margin-bottom: 3px;
       @media screen and (max-width: 980px) {
         display: none;
       }
     }
     .var-value {
-      color: vars.$main_color;
+      color: var(--sidebar-value-color);
       margin-bottom: 7px;
       @media screen and (max-width: 980px) {
         display: flex;

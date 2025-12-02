@@ -1,6 +1,8 @@
 import cross                    from './img/cross.png'
-import search                   from './img/search.png'
-import mygeolocation            from './img/mygeolocation.png'
+import search_day               from './img/search_day.svg'
+import search_night             from './img/search_night.svg'
+import mygeolocation_day        from './img/mygeolocation_day.svg'
+import mygeolocation_night      from './img/mygeolocation_night.svg'
 import error                    from './img/error.png'
 
 import clear_day                from './img/weather sprites/clear_day.svg'
@@ -23,8 +25,10 @@ import rain_with_thunderstorm   from './img/weather sprites/rain_with_thundersto
 
 export const actionImages = {
         cross,
-        search, 
-        mygeolocation, 
+        search_day, 
+        search_night,
+        mygeolocation_day, 
+        mygeolocation_night,
         error
 };
 

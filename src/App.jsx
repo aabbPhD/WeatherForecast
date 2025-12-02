@@ -15,6 +15,7 @@ import { translations } from './config/translations';
 function App() {
     const windowWidth = useWindowWidth();//хук для определения ширины экрана
     const language = useSelector(state => state.language.language);//текущий язык
+    const [theme, setTheme] = React.useState("day");
 
     //стартовое сообщение (пока не был в первый раз выполнен fetch запрос)
     const [startMessageShown, setStartMessageShown] = React.useState(true);
@@ -255,44 +256,47 @@ function App() {
     const geolocationError = geolocationErrorCode !== null ? translations[language].fetchGeolocationError[geolocationErrorCode] : null;
 
     return (
-        <div className="app">
-            <MainContent weatherRef={weatherRef}
-                         startMessageShown={startMessageShown}
-                         setIsWeatherComponentVisible={setIsWeatherComponentVisible}
-                         inputLatitude={inputLatitude}
-                         inputLongitude={inputLongitude}
-                         setInputLatitude={setInputLatitude}
-                         setInputLongitude={setInputLongitude}
-                         curLatitude={curLatitude}
-                         curLongitude={curLongitude}
-                         currentData={currentData}
-                         tempUnits={tempUnits}
-                         timezone={timezone}
-                         invalidInput={invalidInput}
-                         triggerSearchButton={triggerSearchButton} 
-                         dataLoading={dataLoading}
-                         fetchError={fetchError}
-                         getMyLocation={getMyLocation}
-                         geolocationLoading={geolocationLoading}
-                         geolocationError={geolocationError}
-                         windowWidth={windowWidth}/>
-                         
-            <Sidebar setInputLatitude={setInputLatitude}
-                     setInputLongitude={setInputLongitude}
-                     tempUnits={tempUnits}
-                     setTempUnits={setTempUnits}
-                     timezone={timezone}
-                     setTimezone={setTimezone}
-                     dataLoading={dataLoading}
-                     geolocationLoading={geolocationLoading}
-                     fetchWeatherData={fetchWeatherData}
-                     setSearchTriggered={setSearchTriggered}
-                     setWeatherErrorCode={setWeatherErrorCode}
-                     geolocationError={geolocationError}
-                     worldCitiesMap={worldCitiesMap}
-                     windowWidth={windowWidth}/>
+        <div className={`window ${theme}-theme`}>
+            <div className="app">
+                <MainContent weatherRef={weatherRef}
+                            theme={theme}
+                            setTheme={setTheme}
+                            startMessageShown={startMessageShown}
+                            setIsWeatherComponentVisible={setIsWeatherComponentVisible}
+                            inputLatitude={inputLatitude}
+                            inputLongitude={inputLongitude}
+                            setInputLatitude={setInputLatitude}
+                            setInputLongitude={setInputLongitude}
+                            curLatitude={curLatitude}
+                            curLongitude={curLongitude}
+                            currentData={currentData}
+                            tempUnits={tempUnits}
+                            timezone={timezone}
+                            invalidInput={invalidInput}
+                            triggerSearchButton={triggerSearchButton} 
+                            dataLoading={dataLoading}
+                            fetchError={fetchError}
+                            getMyLocation={getMyLocation}
+                            geolocationLoading={geolocationLoading}
+                            geolocationError={geolocationError}
+                            windowWidth={windowWidth}/>
+                            
+                <Sidebar setInputLatitude={setInputLatitude}
+                        setInputLongitude={setInputLongitude}
+                        tempUnits={tempUnits}
+                        setTempUnits={setTempUnits}
+                        timezone={timezone}
+                        setTimezone={setTimezone}
+                        dataLoading={dataLoading}
+                        geolocationLoading={geolocationLoading}
+                        fetchWeatherData={fetchWeatherData}
+                        setSearchTriggered={setSearchTriggered}
+                        setWeatherErrorCode={setWeatherErrorCode}
+                        geolocationError={geolocationError}
+                        worldCitiesMap={worldCitiesMap}
+                        windowWidth={windowWidth}/>
+            </div>
         </div>
-        
     );
 }
 

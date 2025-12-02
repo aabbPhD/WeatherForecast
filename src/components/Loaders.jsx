@@ -2,20 +2,29 @@ import '../styles/app.scss';
 import { PuffLoader, ClockLoader } from "react-spinners";
 
 
-export function WeatherLoader() {
+
+const color = {
+    neutral: 'rgb(44, 55, 255)',
+    night: 'orange',
+    day: 'rgba(242, 255, 0, 1)',
+}
+
+
+
+export function WeatherLoader({theme}) {
     return (
         <div className='weather-loader'>
-            <PuffLoader color="rgb(44, 55, 255)" 
+            <PuffLoader color={color[theme]} 
                         size={120} 
                         speedMultiplier={1}/>
         </div>
     )
 }
 
-export function GeolocationLoader({hidden}) {
+export function GeolocationLoader({theme, hidden}) {
     return (
         <div className={`my-geolocation--loader${hidden ? ' hidden' : ''}`}> 
-            <ClockLoader color="rgb(44, 55, 255)" 
+            <ClockLoader color={color[theme]} 
                         size={20} 
                         speedMultiplier={1}/>
         </div>

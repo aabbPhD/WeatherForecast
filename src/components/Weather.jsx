@@ -11,7 +11,7 @@ import { weatherIcons } from '../config/weathericons';
 import { translations, daysOfWeek_full, weatherCodeDescriptions } from '../config/translations';
 
 
-const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {  
+const Weather = React.memo(({theme, setTheme, data, latitude, longtitude, selectedTimezone, windowWidth, weatherRef, setIsWeatherComponentVisible}) => {  
     //важно обозначить, что компонент был отрендерен, теперь до него можно делать прокрутку экрана
     React.useEffect(() => setIsWeatherComponentVisible(true), []);
 
@@ -68,6 +68,10 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windo
     const humidity = hourly.relative_humidity_2m[selectedHourlyIndex];
     const precipitationProbability = hourly.precipitation_probability[selectedHourlyIndex];
 
+    React.useEffect(() => {
+        setTheme(isDayTime ? 'day' : 'night');
+    }, [isDayTime]);
+
     return (
         <div className='weather' ref={weatherRef}>
             <CurrentWeather weatherIcon={weatherIcon} 
@@ -82,7 +86,8 @@ const Weather = React.memo(({data, latitude, longtitude, selectedTimezone, windo
                             tempUnits={tempUnits}
                             latitude={latitude}
                             longtitude={longtitude}/>
-            <TemperatureGraph   hourly={hourly} 
+            <TemperatureGraph   theme={theme}
+                                hourly={hourly} 
                                 firstTimestamp={HOURS_PER_DAY * selectedDay}
                                 selectedDataIndex={selectedDataIndex}
                                 setSelectedDataIndex={setSelectedDataIndex}

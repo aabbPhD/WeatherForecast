@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { translations } from '../config/translations';
 
 
-const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
+const Search = React.memo(({theme, inputLatitude, inputLongitude, setInputLatitude, setInputLongitude, triggerSearchButton, invalidInput, getMyLocation, geolocationLoading, geolocationError, windowWidth}) => {
     const language = useSelector(state => state.language.language);
     
     //поиск по нажатию Enter
@@ -20,6 +20,9 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
             triggerSearchButton();
         }
     }
+
+    const searchImgName = 'search_' + theme;
+    const myGeolocationImgName = 'mygeolocation_' + theme;
     
     return (
         <div className='search-bar' onKeyDownCapture={handleKeyDown}>
@@ -27,7 +30,7 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
                    
                 {windowWidth >= width_changeButtonsToPictures ?
                     <button className='search--button' onClick={triggerSearchButton}>{translations[language].searchButton}</button> : 
-                    <img className='img-button search' src={actionImages['search']} alt='search' onClick={triggerSearchButton}/>
+                    <img className='img-button search' src={actionImages[searchImgName]} alt='search' onClick={triggerSearchButton}/>
                 }            
                 <NumberInput
                     inputValue={inputLatitude}
@@ -54,10 +57,10 @@ const Search = React.memo(({inputLatitude, inputLongitude, setInputLatitude, set
             <div className='my-geolocation-wrapper'>
                 {geolocationError ? 
                     <GeolocationErrorButton geolocationError={geolocationError} windowWidth={windowWidth}/> :
-                    <GeolocationLoader hidden={geolocationLoading ? false : true}/>}
+                    <GeolocationLoader theme={theme} hidden={geolocationLoading ? false : true}/>}
                 {windowWidth >= width_changeButtonsToPictures ?
                     <button className='my-geolocation--button' onClick={getMyLocation}>{translations[language].myGeolocationButton}</button> : 
-                    <img className='img-button geolocation' src={actionImages['mygeolocation']} alt='my geolocation' onClick={getMyLocation}/>
+                    <img className='img-button geolocation' src={actionImages[myGeolocationImgName]} alt='my geolocation' onClick={getMyLocation}/>
                 }
             </div>
         </div>

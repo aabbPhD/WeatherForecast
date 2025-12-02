@@ -1,13 +1,55 @@
 @use "vars";
 
 
+
+
+@property --gradient-start {
+  syntax: '<color>';
+  initial-value: #0093E8;
+  inherits: false;
+}
+
+@property --gradient-end {
+  syntax: '<color>';
+  initial-value: rgba(186, 230, 255, 1);
+  inherits: false;
+}
+
+$transition_time: 0.5s;
+
+
+.window {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  
+  background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  transition: --gradient-start $transition_time ease, --gradient-end $transition_time ease;
+  
+  &.night-theme {
+    --gradient-start: rgba(2, 0, 36, 1);
+    --gradient-end: rgba(9, 13, 121, 1);
+  }
+
+  &.day-theme {
+    --gradient-start: #0093E8;
+    --gradient-end: rgba(186, 230, 255, 1);
+  }
+
+  &.neutral-theme {
+    background: white;
+    transition: 'background' $transition_time ease;
+  }
+}
+
 .app {
   display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 10px;
-  color: vars.$main_color;
-  background-color: white;
 
   @media screen and (max-width: 980px) {
     flex-direction: column-reverse;
@@ -23,8 +65,8 @@
 
   .app-msg {
     font-size: 30px;
-    color: vars.$main_theme;
-    &.error {color: red;}
+    color: var(--main-msg-color);
+    &.error {color: var(--error-msg-color);}
 
     img {
       display: inline-block;
@@ -45,14 +87,14 @@
 .open-meteo {
   font-size: 20px;
   text-align: right;
-  color: vars.$secondary_color;
+  color: var(--secondary-color);
   margin-top: 10px;
   margin-bottom: 30px;
 
   a {
-    color: vars.$main_theme;
+    color: var(--openmeteo-color);
     text-decoration: underline;
-    &:hover {color: vars.$main_theme_deep;}
+    &:hover {color: var(--openmeteo-color-hover);}
   }
 }
 
